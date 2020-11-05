@@ -1,0 +1,59 @@
+version: '3'
+services:
+  discovery-service:
+    image: discovery-service
+    ports:
+      - "8761:8761"
+  redis:
+    image: "redis:alpine"
+    hostname: redis
+    ports:
+      - "6379:6379"
+  rabbitmq:
+    image: rabbitmq:management
+    hostname: rabbitmq
+    ports:
+      - "5672:5672" #JMS Port
+      - "15672:15672"
+  aggregation-service:
+    image: aggregation-service
+    depends_on:
+     - discovery-service
+     - cloud-gateway
+     - rabbitmq
+     - redis
+    ports:
+      #  local : container expose
+      - "9002:9002"
+    environment:
+      - "SPRING_RABBITMQ_HOST=rabbitmq"
+      - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/"
+  api-fetch-service:
+    image: api-fetch-service
+    depends_on:
+     - discovery-service
+     - rabbitmq
+    ports:
+      - "8082:8082"
+    environment:
+      - "SPRING_RABBITMQ_HOST=rabbitmq"
+      - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/"
+  cloud-gateway:
+    image: cloud-gateway
+    depends_on:
+     - discovery-service
+    environment:
+      - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/"
+    ports:
+      - "9191:9191"
+  web-fetch-service:
+    image: web-fetch-service
+    depends_on:
+     - discovery-service
+     - rabbitmq
+    environment:
+      - "SPRING_RABBITMQ_HOST=rabbitmq"
+      - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/"
+    ports:
+      - "8084:8084"
+  

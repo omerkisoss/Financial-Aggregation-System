@@ -1,0 +1,13 @@
+server:
+  port: 8084
+  concurrent-sessions: 10
+
+spring:
+  application:
+    name: web-fetch-service
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

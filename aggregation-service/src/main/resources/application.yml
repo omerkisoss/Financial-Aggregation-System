@@ -1,0 +1,22 @@
+server:
+  port: 9002
+
+spring:
+  application:
+    name: aggregation-service
+  redis:
+    host: redis
+    port: 6379
+  rabbitmq:
+    host: ${RABBIT_HOST:localhost}
+
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://discovery-service:8761/eureka/
+threshold:
+  api-threshold: 7200000
+  web-threshold: 14400000
